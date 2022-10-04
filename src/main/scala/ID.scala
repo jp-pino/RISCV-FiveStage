@@ -21,6 +21,7 @@ class InstructionDecode extends MultiIOModule {
       /**
         * TODO: Your code here.
         */
+      val instruction = Input(new Instruction)
     }
   )
 
@@ -36,14 +37,15 @@ class InstructionDecode extends MultiIOModule {
   testHarness.testUpdates     := registers.testHarness.testUpdates
 
 
-  /**
-    * TODO: Your code here.
-    */
-  registers.io.readAddress1 := 0.U
-  registers.io.readAddress2 := 0.U
-  registers.io.writeEnable  := false.B
-  registers.io.writeAddress := 0.U
-  registers.io.writeData    := 0.U
+  // Milestone 1. Connect Register addresses to instruction signal (RS1 and RS2)
+  registers.io.readAddress1 := io.instruction.registerRs1
+  registers.io.readAddress2 := io.instruction.registerRs2
+  // TODO: Part of future milestone
+  registers.io.writeEnable  := false.B 
+  registers.io.writeAddress := 0.U     
+  registers.io.writeData    := 0.U     
 
-  decoder.instruction := 0.U.asTypeOf(new Instruction)
+  // Milestone 1. Connect Decoder to instruction signal
+  decoder.instruction := io.instruction
+  // TODO: decoder.immType goes into my mux
 }
