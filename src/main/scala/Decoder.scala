@@ -46,15 +46,15 @@ class Decoder() extends Module {
     */
   val opcodeMap: Array[(BitPat, List[UInt])] = Array(
 
-    // signal      regWrite, memRead, memWrite, branch,  jump, branchType,    Op1Select, Op2Select, ImmSelect,    ALUOp
-    LW     -> List(Y,        Y,       N,        N,       N,    branchType.DC, rs1,       imm,       ITYPE,        ALUOps.ADD),
-
-    SW     -> List(N,        N,       Y,        N,       N,    branchType.DC, rs1,       imm,       STYPE,        ALUOps.ADD),
-
-    ADD    -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,       rs2,       ImmFormat.DC, ALUOps.ADD),
-    ADDI   -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,       imm,       ITYPE,        ALUOps.ADD),
-
-    SUB    -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,       rs2,       ImmFormat.DC, ALUOps.SUB),
+    // signal      regWrite, memRead, memWrite, branch,  jump, branchType,    Op1Select,     Op2Select,     ImmSelect,    ALUOp
+    LW     -> List(Y,        Y,       N,        N,       N,    branchType.DC, rs1,           imm,           ITYPE,        ALUOps.ADD),
+       
+    SW     -> List(N,        N,       Y,        N,       N,    branchType.DC, rs1,           imm,           STYPE,        ALUOps.ADD),
+       
+    ADD    -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           rs2,           ImmFormat.DC, ALUOps.ADD),
+    ADDI   -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           imm,           ITYPE,        ALUOps.ADD),
+       
+    SUB    -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           rs2,           ImmFormat.DC, ALUOps.SUB),
     
 
     /**
@@ -69,6 +69,8 @@ class Decoder() extends Module {
     io.instruction.asUInt(),
     NOP,
     opcodeMap)
+
+  printf("INS %x REGWRITE %d\n", io.instruction.asUInt(), decodedControlSignals(0))
 
   io.controlSignals.regWrite   := decodedControlSignals(0)
   io.controlSignals.memRead    := decodedControlSignals(1)
