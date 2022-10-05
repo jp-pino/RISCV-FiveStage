@@ -15,6 +15,7 @@ class ALU extends Module {
 
     val aluResult = Output(UInt(32.W))
   })
+
   
   val ALUopMap = Array(
     ALUOps.ADD    -> (io.op1 + io.op2),

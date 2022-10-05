@@ -34,6 +34,12 @@ class InstructionDecode extends MultiIOModule {
       val op1Select      = Output(UInt(1.W))
       val op2Select      = Output(UInt(1.W))
       val ALUop          = Output(UInt(4.W))
+
+      // WB Stage
+      val WBaluResultIn = Input(UInt(32.W))
+      val WBdataMemIn = Input(UInt(32.W))
+      val WBinstruction = Input(new Instruction)
+      val WBcontrolSignals = Input(new ControlSignals)
     }
   )
 
@@ -52,10 +58,10 @@ class InstructionDecode extends MultiIOModule {
   // Milestone 1. Connect Register addresses to instruction signal (RS1 and RS2)
   registers.io.readAddress1 := io.instruction.registerRs1
   registers.io.readAddress2 := io.instruction.registerRs2
-  // TODO: Part of future milestone
-  registers.io.writeEnable  := false.B 
-  registers.io.writeAddress := 0.U     
-  registers.io.writeData    := 0.U     
+  // WB: connect to wb control signals
+  registers.io.writeEnable  := io.WBcontrolSignals.regWrite
+  registers.io.writeAddress := io.WBinstruction.registerRd 
+  registers.io.writeData    := Mux(io.controlSignals.memRead, io.WBdataMemIn, io.WBaluResultIn)    
 
   // Milestone 1. Connect register outputs to RegA and RegB wires
   io.RegA := registers.io.readAddress1

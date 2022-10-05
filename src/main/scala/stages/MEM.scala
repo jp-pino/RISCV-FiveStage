@@ -18,6 +18,14 @@ class MemoryFetch() extends MultiIOModule {
 
   val io = IO(
     new Bundle {
+      val PC = Input(UInt(32.W))
+      val instruction = Input(new Instruction)
+      val RegB = Input(UInt(32.W))
+      val aluResult = Input(UInt(32.W))
+      val controlSignals = Input(new ControlSignals)
+      val branchType = Input(UInt(3.W))
+
+      val dataOut = Output(UInt(32.W))
     })
 
 
@@ -35,7 +43,8 @@ class MemoryFetch() extends MultiIOModule {
   /**
     * Your code here.
     */
-  DMEM.io.dataIn      := 0.U
-  DMEM.io.dataAddress := 0.U
-  DMEM.io.writeEnable := false.B
+  DMEM.io.dataIn      := io.RegB
+  DMEM.io.dataAddress := io.aluResult
+  DMEM.io.writeEnable := io.controlSignals.memWrite
+  io.dataOut := DMEM.io.dataOut
 }

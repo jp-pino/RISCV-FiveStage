@@ -28,7 +28,7 @@ class Execute extends Module {
 
   val ALU = Module(new ALU).io
 
-  ALU.aluOp := io.instruction.opcode
+  ALU.aluOp := io.ALUop
   ALU.op1 := MuxLookup(io.op1Select, 0.U, Array(
     Op1Select.rs1 -> io.RegA,
     Op1Select.PC -> io.PC,
