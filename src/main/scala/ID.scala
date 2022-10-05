@@ -2,6 +2,7 @@ package FiveStage
 import chisel3._
 import chisel3.util.{ BitPat, MuxCase }
 import chisel3.experimental.MultiIOModule
+import chisel3.util.MuxLookup
 
 
 class InstructionDecode extends MultiIOModule {
@@ -22,6 +23,17 @@ class InstructionDecode extends MultiIOModule {
         * TODO: Your code here.
         */
       val instruction = Input(new Instruction)
+      val PC = Input(UInt(32.W))
+      
+      val immediate = Output(SInt(32.W))
+      val RegA = Output(UInt(32.W))
+      val RegB = Output(UInt(32.W))
+
+      val controlSignals = Output(new ControlSignals)
+      val branchType     = Output(UInt(3.W))
+      val op1Select      = Output(UInt(1.W))
+      val op2Select      = Output(UInt(1.W))
+      val ALUop          = Output(UInt(4.W))
     }
   )
 
@@ -45,7 +57,28 @@ class InstructionDecode extends MultiIOModule {
   registers.io.writeAddress := 0.U     
   registers.io.writeData    := 0.U     
 
+  // Milestone 1. Connect register outputs to RegA and RegB wires
+  io.RegA := registers.io.readAddress1
+  io.RegB := registers.io.readAddress2
+
   // Milestone 1. Connect Decoder to instruction signal
+  // Create a Mux to select the immediate using the immType 
   decoder.instruction := io.instruction
-  // TODO: decoder.immType goes into my mux
+  io.immediate := MuxLookup(decoder.immType, 0.S(32.W), Array(
+    ImmFormat.ITYPE -> decoder.instruction.immediateIType,
+    ImmFormat.STYPE -> decoder.instruction.immediateSType,
+    ImmFormat.BTYPE -> decoder.instruction.immediateBType,
+    ImmFormat.UTYPE -> decoder.instruction.immediateUType,
+    ImmFormat.JTYPE -> decoder.instruction.immediateJType,
+    ImmFormat.SHAMT -> decoder.instruction.immediateZType,
+    ImmFormat.DC -> decoder.instruction.immediateZType,
+  ))
+
+  // Milestone 1. Connect control signals
+  io.controlSignals := decoder.controlSignals
+  io.branchType := decoder.branchType
+  io.op1Select := decoder.op1Select
+  io.op2Select := decoder.op2Select
+  io.ALUop := decoder.ALUop
+
 }

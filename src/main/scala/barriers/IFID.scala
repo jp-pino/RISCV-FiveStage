@@ -7,7 +7,7 @@ import chisel3.core.Output
 // Milestone 1. Implement Instruction fetch barrier. 
 //   PC is delayed by a cycle
 //   Instruction is wired directly
-class IFBarrier extends Module {
+class IFID extends Module {
   val io = IO(new Bundle {
     val instructionIn = Input(new Instruction)
     val instructionOut = Output(new Instruction)

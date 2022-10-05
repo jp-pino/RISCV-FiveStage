@@ -21,15 +21,15 @@ class CPU extends MultiIOModule {
   /**
     You need to create the classes for these yourself
     */
-  val IFBarrier  = Module(new IFBarrier).io
-  // val IDBarrier  = Module(new IDBarrier).io
+  val IFID  = Module(new IFID).io
+  val IDEX  = Module(new IDEX).io
   // val EXBarrier  = Module(new EXBarrier).io
   // val MEMBarrier = Module(new MEMBarrier).io
 
 
   val IF  = Module(new InstructionFetch)
   val ID  = Module(new InstructionDecode)
-  // val EX  = Module(new Execute)
+  val EX  = Module(new Execute)
   val MEM = Module(new MemoryFetch)
   // val WB  = Module(new Execute) (You may not need this one?)
 
@@ -56,8 +56,43 @@ class CPU extends MultiIOModule {
     TODO: Your code here
     */
 
-  // Milestone 1. Connect ID and IF through IFBarrier
-  IFBarrier.instructionIn := IF.io.instruction
-  IFBarrier.PCIn := IF.io.PC
-  ID.io.instruction := IFBarrier.instructionOut
+  //// Milestone 1. Connect ID and IF through IFID Barrier
+  
+  // IFID Inputs
+  // Connect output instrction from IF stage to IFID barrier instrunction input
+  IFID.instructionIn := IF.io.instruction
+  // Connect output PC from IF stage to IFID barrier PC input
+  IFID.PCIn := IF.io.PC
+  
+  // ID Inputs
+  // Connect instruction output from IFID barrier to ID stage
+  ID.io.instruction := IFID.instructionOut
+  // Connect PC output from IFID barrier to ID stage
+  ID.io.PC := IFID.PCOut
+
+  // IDEX Inputs (from IFID and ID)
+  IDEX.PCIn := IFID.PCOut
+  IDEX.instructionIn := IFID.instructionOut
+  IDEX.RegAIn := ID.io.RegA
+  IDEX.RegBIn := ID.io.RegB
+  IDEX.immediateIn := ID.io.immediate
+  IDEX.controlSignalsIn := ID.io.controlSignals
+  IDEX.branchTypeIn := ID.io.branchType
+  IDEX.op1SelectIn := ID.io.op1Select
+  IDEX.op2SelectIn := ID.io.op2Select
+  IDEX.ALUopIn := ID.io.ALUop
+
+  // EX Inputs (from IDEX)
+  EX.io.PC := IDEX.PCOut
+  EX.io.instruction := IDEX.instructionOut
+  EX.io.RegA := IDEX.RegAOut
+  EX.io.RegB := IDEX.RegBOut
+  EX.io.immediate := IDEX.immediateOut
+  EX.io.controlSignals := IDEX.controlSignalsOut
+  EX.io.branchType := IDEX.branchTypeOut
+  EX.io.op1Select := IDEX.op1SelectOut
+  EX.io.op2Select := IDEX.op2SelectOut
+  EX.io.ALUop := IDEX.ALUopOut
+  
+  
 }
