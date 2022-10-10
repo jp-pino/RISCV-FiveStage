@@ -53,9 +53,25 @@ class Decoder() extends Module {
        
     ADD    -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           rs2,           ImmFormat.DC, ALUOps.ADD),
     ADDI   -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           imm,           ITYPE,        ALUOps.ADD),
-       
     SUB    -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           rs2,           ImmFormat.DC, ALUOps.SUB),
-    
+
+    AND    -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           rs2,           ImmFormat.DC, ALUOps.AND),
+    ANDI   -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           imm,           ITYPE,        ALUOps.AND),
+    OR     -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           rs2,           ImmFormat.DC, ALUOps.OR),
+    ORI    -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           imm,           ITYPE,        ALUOps.OR),
+    XOR    -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           rs2,           ImmFormat.DC, ALUOps.XOR),
+    XORI   -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           imm,           ITYPE,        ALUOps.XOR),
+    SLT    -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           rs2,           ImmFormat.DC, ALUOps.SLT),
+    SLTI   -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           imm,           ITYPE,        ALUOps.SLT),
+    SLTU   -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           rs2,           ImmFormat.DC, ALUOps.SLTU),
+    SLTIU  -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           imm,           ITYPE,        ALUOps.SLTU),
+
+    SRA    -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           rs2,           ImmFormat.DC, ALUOps.SRA),
+    SRAI   -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           imm,           ITYPE,        ALUOps.SRA),
+    SRL    -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           rs2,           ImmFormat.DC, ALUOps.SRL),
+    SRLI   -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           imm,           ITYPE,        ALUOps.SRL),
+    SLL    -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           rs2,           ImmFormat.DC, ALUOps.SLL),
+    SLLI   -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           imm,           ITYPE,        ALUOps.SLL),
 
     /**
       TODO: Fill in the blanks
@@ -70,7 +86,7 @@ class Decoder() extends Module {
     NOP,
     opcodeMap)
 
-  printf("INS %x REGWRITE %d\n", io.instruction.asUInt(), decodedControlSignals(0))
+  // printf("INS %x REGWRITE %d REGRd[%x]\n", io.instruction.asUInt(), decodedControlSignals(0), io.instruction.registerRd)
 
   io.controlSignals.regWrite   := decodedControlSignals(0)
   io.controlSignals.memRead    := decodedControlSignals(1)

@@ -63,7 +63,7 @@ class CPU extends MultiIOModule {
   IFID.instructionIn := IF.io.instruction
   // Connect output PC from IF stage to IFID barrier PC input
   IFID.PCIn := IF.io.PC
-  
+
   // ID Inputs
   // Connect instruction output from IFID barrier to ID stage
   ID.io.instruction := IFID.instructionOut

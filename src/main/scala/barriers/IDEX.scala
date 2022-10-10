@@ -12,19 +12,15 @@ class IDEX extends Module {
     val PCIn = Input(UInt(32.W))
     val PCOut = Output(UInt(32.W))
 
-
     val instructionIn = Input(new Instruction)
     val instructionOut = Output(new Instruction)
-
 
     val RegAIn = Input(UInt(32.W))
     val RegAOut = Output(UInt(32.W))
 
-
     val RegBIn = Input(UInt(32.W))
     val RegBOut = Output(UInt(32.W))
 
-    
     val immediateIn = Input(SInt(32.W))
     val immediateOut = Output(SInt(32.W))
 
@@ -75,7 +71,7 @@ class IDEX extends Module {
   immediate := io.immediateIn
   io.immediateOut := immediate
 
-  // Immediate Register
+  // ControlSignals Register
   val controlSignals = RegInit(Reg(new ControlSignals))
   // Wire through register
   controlSignals := io.controlSignalsIn
@@ -104,5 +100,47 @@ class IDEX extends Module {
   // Wire through register
   ALUop := io.ALUopIn
   io.ALUopOut := ALUop
-  
+
+
+  // printf("=====IDEX=====\n" +
+  //   "io.instructionIn: 0x%x\n" +
+  //   "io.instructionOut: 0x%x\n" +
+  //   "io.PCIn: 0x%x\n" +
+  //   "io.PCOut: 0x%x\n" +
+  //   "io.RegAIn: 0x%x\n" +
+  //   "io.RegAOut: 0x%x\n" +
+  //   "io.RegBIn: 0x%x\n" +
+  //   "io.RegBOut: 0x%x\n" +
+  //   "io.immediateIn: 0x%x\n" +
+  //   "io.immediateOut: 0x%x\n" +
+  //   "io.controlSignalsIn: 0x%x\n" +
+  //   "io.controlSignalsOut: 0x%x\n" +
+  //   "io.branchTypeIn: 0x%x\n" +
+  //   "io.branchTypeOut: 0x%x\n" +
+  //   "io.op1SelectIn: 0x%x\n" +
+  //   "io.op1SelectOut: 0x%x\n" +
+  //   "io.op2SelectIn: 0x%x\n" +
+  //   "io.op2SelectOut: 0x%x\n" +
+  //   "io.ALUopIn: 0x%x\n" +
+  //   "io.ALUopOut: 0x%x\n",
+  //   io.instructionIn.instruction,
+  //   io.instructionOut.instruction,
+  //   io.PCIn,
+  //   io.PCOut,
+  //   io.RegAIn,
+  //   io.RegAOut,
+  //   io.RegBIn,
+  //   io.RegBOut,
+  //   io.immediateIn,
+  //   io.immediateOut,
+  //   io.controlSignalsIn.asUInt(),
+  //   io.controlSignalsOut.asUInt(),
+  //   io.branchTypeIn,
+  //   io.branchTypeOut,
+  //   io.op1SelectIn,
+  //   io.op1SelectOut,
+  //   io.op2SelectIn,
+  //   io.op2SelectOut,
+  //   io.ALUopIn,
+  //   io.ALUopOut)
 }

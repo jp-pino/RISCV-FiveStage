@@ -40,4 +40,6 @@ class Execute extends Module {
     Op2Select.DC -> 0.U
   ))
   io.aluResult := ALU.aluResult
+
+  // printf("PC: 0x%x | ", io.PC)
 }

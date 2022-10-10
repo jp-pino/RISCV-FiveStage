@@ -24,4 +24,15 @@ class IFID extends Module {
   
   // Wire directly
   io.instructionOut := io.instructionIn
+
+
+  // printf("=====IFID=====\n" +
+  //   "io.instructionIn: 0x%x\n" +
+  //   "io.instructionOut: 0x%x\n" +
+  //   "io.PCIn: 0x%x\n" +
+  //   "io.PCOut: 0x%x\n\n", 
+  //   io.instructionIn.instruction,
+  //   io.instructionOut.instruction,
+  //   io.PCIn,
+  //   io.PCOut)
 }

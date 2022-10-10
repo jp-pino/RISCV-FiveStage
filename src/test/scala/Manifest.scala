@@ -19,7 +19,7 @@ import LogParser._
 
 object Manifest {
 
-  val singleTest = "addi.s"
+  val singleTest = "arith.s"
 
   // Tells the program to add NOPs for executing test cases prior to the pipeline implementation
   val nopPadded = true
