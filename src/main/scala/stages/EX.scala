@@ -44,9 +44,9 @@ class Execute extends Module {
     Op2Select.DC -> 0.U
   ))
   // Jump logic. TODO: ask about + 4?? shouldn't we already have the PC+4 in
-  io.aluResult := Mux(io.controlSignals.jump, io.PC + 4.U, ALU.aluResult)
+  io.aluResult := ALU.aluResult
 
-  io.PCOut := (io.PC.asSInt() + io.immediate).asUInt()
+  io.PCOut := Mux(io.branchType === branchType.link, ((io.PC.asSInt() + io.immediate).asUInt()) & "hfffffffe".U, (io.PC.asSInt() + io.immediate).asUInt()).asUInt()
 
   // Branch comparator
   Comparator.op1 := io.RegA

@@ -1,5 +1,5 @@
 main:
-  li x0, 0x0
+  li x1, 0x01
   nop
   li x1, 0xABCDEF0
   nop

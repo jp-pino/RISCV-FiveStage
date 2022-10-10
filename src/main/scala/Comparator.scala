@@ -25,6 +25,7 @@ class Comparator extends Module {
     branchType.gteu -> (io.op1 >= io.op2),
     branchType.ltu -> (io.op1 < io.op2),
     branchType.jump -> (true.B),
+    branchType.link -> (true.B),
     branchType.DC -> (false.B)
   ) 
 
