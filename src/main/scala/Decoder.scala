@@ -46,37 +46,40 @@ class Decoder() extends Module {
     */
   val opcodeMap: Array[(BitPat, List[UInt])] = Array(
 
-    // signal      regWrite, memRead, memWrite, branch,  jump, branchType,    Op1Select,     Op2Select,     ImmSelect,    ALUOp
-    LW     -> List(Y,        Y,       N,        N,       N,    branchType.DC, rs1,           imm,           ITYPE,        ALUOps.ADD),
-       
-    SW     -> List(N,        N,       Y,        N,       N,    branchType.DC, rs1,           imm,           STYPE,        ALUOps.ADD),
-       
-    ADD    -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           rs2,           ImmFormat.DC, ALUOps.ADD),
-    ADDI   -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           imm,           ITYPE,        ALUOps.ADD),
-    SUB    -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           rs2,           ImmFormat.DC, ALUOps.SUB),
+    // signal      regWrite, memRead, memWrite, branch,  jump, branchType,      Op1Select,     Op2Select,     ImmSelect,    ALUOp
+    LW     -> List(Y,        Y,       N,        N,       N,    branchType.DC,   rs1,           imm,           ITYPE,        ALUOps.ADD),
+        
+    SW     -> List(N,        N,       Y,        N,       N,    branchType.DC,   rs1,           imm,           STYPE,        ALUOps.ADD),
+        
+    ADD    -> List(Y,        N,       N,        N,       N,    branchType.DC,   rs1,           rs2,           ImmFormat.DC, ALUOps.ADD),
+    ADDI   -> List(Y,        N,       N,        N,       N,    branchType.DC,   rs1,           imm,           ITYPE,        ALUOps.ADD),
+    SUB    -> List(Y,        N,       N,        N,       N,    branchType.DC,   rs1,           rs2,           ImmFormat.DC, ALUOps.SUB),
+ 
+    AND    -> List(Y,        N,       N,        N,       N,    branchType.DC,   rs1,           rs2,           ImmFormat.DC, ALUOps.AND),
+    ANDI   -> List(Y,        N,       N,        N,       N,    branchType.DC,   rs1,           imm,           ITYPE,        ALUOps.AND),
+    OR     -> List(Y,        N,       N,        N,       N,    branchType.DC,   rs1,           rs2,           ImmFormat.DC, ALUOps.OR),
+    ORI    -> List(Y,        N,       N,        N,       N,    branchType.DC,   rs1,           imm,           ITYPE,        ALUOps.OR),
+    XOR    -> List(Y,        N,       N,        N,       N,    branchType.DC,   rs1,           rs2,           ImmFormat.DC, ALUOps.XOR),
+    XORI   -> List(Y,        N,       N,        N,       N,    branchType.DC,   rs1,           imm,           ITYPE,        ALUOps.XOR),
+    SLT    -> List(Y,        N,       N,        N,       N,    branchType.DC,   rs1,           rs2,           ImmFormat.DC, ALUOps.SLT),
+    SLTI   -> List(Y,        N,       N,        N,       N,    branchType.DC,   rs1,           imm,           ITYPE,        ALUOps.SLT),
+    SLTU   -> List(Y,        N,       N,        N,       N,    branchType.DC,   rs1,           rs2,           ImmFormat.DC, ALUOps.SLTU),
+    SLTIU  -> List(Y,        N,       N,        N,       N,    branchType.DC,   rs1,           imm,           ITYPE,        ALUOps.SLTU),
+ 
+    SRA    -> List(Y,        N,       N,        N,       N,    branchType.DC,   rs1,           rs2,           ImmFormat.DC, ALUOps.SRA),
+    SRAI   -> List(Y,        N,       N,        N,       N,    branchType.DC,   rs1,           imm,           ITYPE,        ALUOps.SRA),
+    SRL    -> List(Y,        N,       N,        N,       N,    branchType.DC,   rs1,           rs2,           ImmFormat.DC, ALUOps.SRL),
+    SRLI   -> List(Y,        N,       N,        N,       N,    branchType.DC,   rs1,           imm,           ITYPE,        ALUOps.SRL),
+    SLL    -> List(Y,        N,       N,        N,       N,    branchType.DC,   rs1,           rs2,           ImmFormat.DC, ALUOps.SLL),
+    SLLI   -> List(Y,        N,       N,        N,       N,    branchType.DC,   rs1,           imm,           ITYPE,        ALUOps.SLL),
 
-    AND    -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           rs2,           ImmFormat.DC, ALUOps.AND),
-    ANDI   -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           imm,           ITYPE,        ALUOps.AND),
-    OR     -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           rs2,           ImmFormat.DC, ALUOps.OR),
-    ORI    -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           imm,           ITYPE,        ALUOps.OR),
-    XOR    -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           rs2,           ImmFormat.DC, ALUOps.XOR),
-    XORI   -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           imm,           ITYPE,        ALUOps.XOR),
-    SLT    -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           rs2,           ImmFormat.DC, ALUOps.SLT),
-    SLTI   -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           imm,           ITYPE,        ALUOps.SLT),
-    SLTU   -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           rs2,           ImmFormat.DC, ALUOps.SLTU),
-    SLTIU  -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           imm,           ITYPE,        ALUOps.SLTU),
+    // Jumping
+    // JAL    -> List(Y,        N,       N,        N,       Y,    branchType.jump, PC,            Op2Select.DC,  JTYPE,        ALUOps.DC),
+    // JALR   -> List(Y,        N,       N,        N,       Y,    branchType.jump, PC,            Op2Select.DC,  ITYPE,        ALUOps.DC),
 
-    SRA    -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           rs2,           ImmFormat.DC, ALUOps.SRA),
-    SRAI   -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           imm,           ITYPE,        ALUOps.SRA),
-    SRL    -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           rs2,           ImmFormat.DC, ALUOps.SRL),
-    SRLI   -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           imm,           ITYPE,        ALUOps.SRL),
-    SLL    -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           rs2,           ImmFormat.DC, ALUOps.SLL),
-    SLLI   -> List(Y,        N,       N,        N,       N,    branchType.DC, rs1,           imm,           ITYPE,        ALUOps.SLL),
-
-    /**
-      TODO: Fill in the blanks
-      */
-    )
+    // Branching
+    BEQ    -> List(N,        N,       N,        Y,       Y,    branchType.beq,  Op1Select.DC,  Op2Select.DC,  STYPE,        ALUOps.DC),
+  )
 
 
   val NOP = List(N, N, N, N, N, branchType.DC, rs1, rs2, ImmFormat.DC, ALUOps.DC)

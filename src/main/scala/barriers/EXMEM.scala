@@ -26,6 +26,9 @@ class EXMEM extends Module {
 
     val branchTypeIn = Input(UInt(3.W))
     val branchTypeOut = Output(UInt(3.W))
+
+    val comparatorIn = Input(Bool())
+    val comparatorOut = Output(Bool())
   })
 
   // PC Register
@@ -63,4 +66,10 @@ class EXMEM extends Module {
   // Wire through register
   branchType := io.branchTypeIn
   io.branchTypeOut := branchType
+
+  // Comparator Register
+  val comparator = RegInit(Bool(), false.B)
+  // Wire through register
+  comparator := io.comparatorIn
+  io.comparatorOut := comparator
 }

@@ -57,6 +57,12 @@ class CPU extends MultiIOModule {
     */
 
   //// Milestone 1. Connect ID and IF through IFID Barrier
+
+  // IF Inputs
+  IF.io.EXMEMPC := EXMEM.PCOut
+  IF.io.EXMEMcontrolSignals := EXMEM.controlSignalsOut
+  IF.io.EXMEMbranchType := EXMEM.branchTypeOut
+  IF.io.EXMEMcomparator := EXMEM.comparatorOut
   
   // IFID Inputs
   // Connect output instrction from IF stage to IFID barrier instrunction input
@@ -95,12 +101,13 @@ class CPU extends MultiIOModule {
   EX.io.ALUop := IDEX.ALUopOut
 
   // EXMEM Inputs
-  EXMEM.PCIn := IDEX.PCOut
+  EXMEM.PCIn := EX.io.PCOut
   EXMEM.instructionIn := IDEX.instructionOut
   EXMEM.RegBIn := IDEX.RegBOut
   EXMEM.aluResultIn := EX.io.aluResult
   EXMEM.controlSignalsIn := IDEX.controlSignalsOut
   EXMEM.branchTypeIn := IDEX.branchTypeOut
+  EXMEM.comparatorIn := EX.io.comparator
   
   // MEM Inputs
   MEM.io.PC := EXMEM.PCOut
