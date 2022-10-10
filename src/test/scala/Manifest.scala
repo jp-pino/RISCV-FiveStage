@@ -19,7 +19,7 @@ import LogParser._
 
 object Manifest {
 
-  val singleTest = "square.s"
+  val singleTest = "branchProfiling.s"
 
   // Tells the program to add NOPs for executing test cases prior to the pipeline implementation
   val nopPadded = true

@@ -37,7 +37,7 @@ class Execute extends Module {
     Op1Select.rs1 -> io.RegA,
     Op1Select.PC -> io.PC,
     Op1Select.DC -> 0.U
-  ))
+  ))  
   ALU.op2 := MuxLookup(io.op2Select, 0.U, Array(
     Op2Select.rs2 -> io.RegB,
     Op2Select.imm -> io.immediate.asUInt(),
@@ -46,13 +46,12 @@ class Execute extends Module {
   // Jump logic. TODO: ask about + 4?? shouldn't we already have the PC+4 in
   io.aluResult := ALU.aluResult
 
-  io.PCOut := Mux(io.branchType === branchType.link, ((io.PC.asSInt() + io.immediate).asUInt()) & "hfffffffe".U, (io.PC.asSInt() + io.immediate).asUInt()).asUInt()
+  io.PCOut := Mux(io.branchType === branchType.link, ((io.RegA.asSInt() + io.immediate).asUInt()) & "hfffffffe".U, (io.PC.asSInt() - 4.S + io.immediate).asUInt()).asUInt() 
+  // printf("branchType: %x | imm: %x | PC: %x | pc + imm + mask: %x | pc + imm: %x \n", io.branchType, io.immediate, io.PC, ((io.PC.asSInt() + io.immediate).asUInt()) & "hfffffffe".U, (io.PC.asSInt() + io.immediate).asUInt())
 
   // Branch comparator
   Comparator.op1 := io.RegA
   Comparator.op2 := io.RegB
   Comparator.branchType := io.branchType
   io.comparator := Comparator.result
-
-  // printf("PC: 0x%x | ", io.PC)
 }

@@ -74,15 +74,19 @@ class Decoder() extends Module {
     SLLI   -> List(Y,        N,       N,        N,       N,    branchType.DC,   rs1,           imm,           ITYPE,        ALUOps.SLL),
 
     LUI    -> List(Y,        N,       N,        N,       N,    branchType.DC,   Op1Select.DC,  imm,           UTYPE,        ALUOps.COPY_B),
+    AUIPC  -> List(Y,        N,       N,        N,       N,    branchType.DC,   PC,            imm,           JTYPE,        ALUOps.ADD),
 
     // Jumping
     JAL    -> List(Y,        N,       N,        N,       Y,    branchType.jump, PC,            Op2Select.DC,  JTYPE,        ALUOps.COPY_A),
-    JALR   -> List(Y,        N,       N,        N,       Y,    branchType.jump, PC,            Op2Select.DC,  ITYPE,        ALUOps.COPY_A),
+    JALR   -> List(Y,        N,       N,        N,       Y,    branchType.link, PC,            Op2Select.DC,  ITYPE,        ALUOps.COPY_A),
 
     // Branching
-    BEQ    -> List(N,        N,       N,        Y,       Y,    branchType.beq,  Op1Select.DC,  Op2Select.DC,  BTYPE,        ALUOps.DC),
-    BNE    -> List(N,        N,       N,        Y,       Y,    branchType.neq,  Op1Select.DC,  Op2Select.DC,  BTYPE,        ALUOps.DC),
-    BGE    -> List(N,        N,       N,        Y,       Y,    branchType.gte,  Op1Select.DC,  Op2Select.DC,  BTYPE,        ALUOps.DC),
+    BEQ    -> List(N,        N,       N,        Y,       N,    branchType.beq,  Op1Select.DC,  Op2Select.DC,  BTYPE,        ALUOps.DC),
+    BNE    -> List(N,        N,       N,        Y,       N,    branchType.neq,  Op1Select.DC,  Op2Select.DC,  BTYPE,        ALUOps.DC),
+    BLT    -> List(N,        N,       N,        Y,       N,    branchType.lt,   Op1Select.DC,  Op2Select.DC,  BTYPE,        ALUOps.DC),
+    BGE    -> List(N,        N,       N,        Y,       N,    branchType.gte,  Op1Select.DC,  Op2Select.DC,  BTYPE,        ALUOps.DC),
+    BLTU   -> List(N,        N,       N,        Y,       N,    branchType.ltu,  Op1Select.DC,  Op2Select.DC,  BTYPE,        ALUOps.DC),
+    BGEU   -> List(N,        N,       N,        Y,       N,    branchType.gteu, Op1Select.DC,  Op2Select.DC,  BTYPE,        ALUOps.DC),
   )
 
 
