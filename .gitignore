@@ -354,5 +354,9 @@ scratchpad.scala
 log/
 index.html
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 056cd22 (Ignore waveforms)
 # Waveforms
 **/*.vcd
