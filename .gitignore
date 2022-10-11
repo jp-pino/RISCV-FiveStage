@@ -353,3 +353,6 @@ target/
 scratchpad.scala
 log/
 index.html
+
+# Waveforms
+**/*.vcd
