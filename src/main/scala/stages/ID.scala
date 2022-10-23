@@ -61,11 +61,12 @@ class InstructionDecode extends MultiIOModule {
   registers.io.writeEnable  := io.WBcontrolSignals.regWrite
   registers.io.writeAddress := io.WBinstruction.registerRd 
   registers.io.writeData    := io.WBdata
-  // printf("ALU RES: 0x%x | ", io.WBaluResultIn) 
+  // printf("ALU RES[%d]: 0x%x | REG A[%d]: 0x%x | REG B[%d]: 0x%x\n", io.WBinstruction.registerRd, io.WBdata, io.instruction.registerRs1, registers.io.readData1, io.instruction.registerRs2, registers.io.readData2) 
 
   // Milestone 1. Connect register outputs to RegA and RegB wires
-  io.RegA := registers.io.readData1
-  io.RegB := registers.io.readData2
+  // Milestone 3. Forward to save one cycle?
+  io.RegA := Mux(io.instruction.registerRs1 === io.WBinstruction.registerRd, io.WBdata, registers.io.readData1)
+  io.RegB := Mux(io.instruction.registerRs2 === io.WBinstruction.registerRd, io.WBdata, registers.io.readData2)
 
   // Milestone 1. Connect Decoder to instruction signal
   // Create a Mux to select the immediate using the immType 

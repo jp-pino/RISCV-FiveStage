@@ -26,6 +26,8 @@ class InstructionFetch extends MultiIOModule {
       val PC = Output(UInt())
       val instruction = Output(new Instruction)
 
+      val stall = Input(Bool())
+
       // From EXMEM
       val EXMEMPC = Input(UInt(32.W))
       val EXMEMcontrolSignals = Input(new ControlSignals)
@@ -52,7 +54,8 @@ class InstructionFetch extends MultiIOModule {
   io.PC := PC
   IMEM.io.instructionAddress := PC
 
-  PC := Mux((io.EXMEMcontrolSignals.branch && io.EXMEMcomparator) || io.EXMEMcontrolSignals.jump, io.EXMEMPC, io.PC + 4.U)
+  // Add stalling functionality
+  PC := Mux((io.EXMEMcontrolSignals.branch && io.EXMEMcomparator) || io.EXMEMcontrolSignals.jump, io.EXMEMPC, Mux(io.stall, io.PC, io.PC + 4.U))
 
   val instruction = Wire(new Instruction)
   instruction := IMEM.io.instruction.asTypeOf(new Instruction)

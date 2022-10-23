@@ -89,6 +89,12 @@ class Execute extends Module {
     RegSource.MEMWB -> io.MEMWBVal
   ))
 
+  // printf("RegA: 0x%x | RegB: 0x%x | EXMEMVal: 0x%x | MEMWBVal: 0x%x\n", io.RegA, io.RegB, io.EXMEMVal, io.MEMWBVal)
+  // printf("RS1[%d]: 0x%x | RS2[%d]: 0x%x | RES: 0x%x\n\n  ", regSourceA, rs1, regSourceB, rs2, ALU.aluResult)
+
+
+  
+
   // ALU
   ALU.aluOp := io.ALUop
   ALU.op1 := MuxLookup(io.op1Select, 0.U, Array(

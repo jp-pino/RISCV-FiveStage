@@ -59,6 +59,7 @@ class CPU extends MultiIOModule {
   //// Milestone 1. Connect ID and IF through IFID Barrier
 
   // IF Inputs
+  IF.io.stall := false.B
   IF.io.EXMEMPC := EXMEM.PCOut
   IF.io.EXMEMcontrolSignals := EXMEM.controlSignalsOut
   IF.io.EXMEMbranchType := EXMEM.branchTypeOut
@@ -134,7 +135,7 @@ class CPU extends MultiIOModule {
   WB.io.dataMemIn := MEMWB.dataMemOut
   WB.io.controlSignals := MEMWB.controlSignalsOut
   
-  // WB is implemented in ID stage
+  // WB data update is implemented in ID stage
   ID.io.WBdata := WB.io.outputData
   ID.io.WBinstruction := MEMWB.instructionOut
   ID.io.WBcontrolSignals := MEMWB.controlSignalsOut
