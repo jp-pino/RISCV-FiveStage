@@ -19,7 +19,7 @@ import LogParser._
 
 object Manifest {
 
-  val singleTest = "forward2.s"
+  val singleTest = "load.s"
 
   // Tells the program to add NOPs for executing test cases prior to the pipeline implementation
   val nopPadded = false
@@ -35,7 +35,7 @@ object Manifest {
     nopPadded          = nopPadded,
     breakPoints        = Nil, // not implemented
     testName           = singleTest,
-    maxSteps           = 20000)
+    maxSteps           = 500)
 
 
   val allTestOptions: String => TestOptions = name => TestOptions(

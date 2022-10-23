@@ -59,7 +59,7 @@ class CPU extends MultiIOModule {
   //// Milestone 1. Connect ID and IF through IFID Barrier
 
   // IF Inputs
-  IF.io.stall := false.B
+  IF.io.stall := ID.io.stall
   IF.io.EXMEMPC := EXMEM.PCOut
   IF.io.EXMEMcontrolSignals := EXMEM.controlSignalsOut
   IF.io.EXMEMbranchType := EXMEM.branchTypeOut
@@ -76,6 +76,9 @@ class CPU extends MultiIOModule {
   ID.io.instruction := IFID.instructionOut
   // Connect PC output from IFID barrier to ID stage
   ID.io.PC := IFID.PCOut
+  // Stall detector
+  ID.io.EXinstruction := IDEX.instructionOut
+  ID.io.EXcontrolSignals := IDEX.controlSignalsOut
 
   // IDEX Inputs (from IFID and ID)
   IDEX.PCIn := IFID.PCOut

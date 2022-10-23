@@ -39,6 +39,11 @@ class InstructionDecode extends MultiIOModule {
       val WBdata = Input(UInt(32.W))
       val WBinstruction = Input(new Instruction)
       val WBcontrolSignals = Input(new ControlSignals)
+  
+      // Stall
+      val EXinstruction = Input(new Instruction)
+      val EXcontrolSignals = Input(new ControlSignals)
+      val stall = Output(Bool())
     }
   )
 
@@ -81,11 +86,15 @@ class InstructionDecode extends MultiIOModule {
     ImmFormat.DC -> decoder.instruction.immediateZType,
   ))
 
+  // Milestone 3. Stall signal
+  // io.stall := false.B
+  io.stall := io.EXcontrolSignals.memRead && (io.EXinstruction.registerRs2 === io.instruction.registerRs1 || io.EXinstruction.registerRs2 === io.instruction.registerRs2)
+
   // Milestone 1. Connect control signals
-  io.controlSignals := decoder.controlSignals
+  io.controlSignals := Mux(io.stall, (0.U).asTypeOf(new ControlSignals), decoder.controlSignals)
   io.branchType := decoder.branchType
   io.op1Select := decoder.op1Select
   io.op2Select := decoder.op2Select
   io.ALUop := decoder.ALUop
-
+  
 }
