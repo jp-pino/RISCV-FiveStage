@@ -31,7 +31,7 @@ class CPU extends MultiIOModule {
   val ID  = Module(new InstructionDecode)
   val EX  = Module(new Execute)
   val MEM = Module(new MemoryFetch)
-  // val WB  = Module(new Execute) (You may not need this one?)
+  val WB  = Module(new WriteBack)
 
 
   /**
@@ -88,13 +88,19 @@ class CPU extends MultiIOModule {
   IDEX.op2SelectIn := ID.io.op2Select
   IDEX.ALUopIn := ID.io.ALUop
 
-  // EX Inputs (from IDEX)
+  // EX Inputs (from IDEX and forwarded from EXMEM and MEMWB) 
   EX.io.PC := IDEX.PCOut
   EX.io.instruction := IDEX.instructionOut
+  EX.io.EXMEMinstruction := EXMEM.instructionOut
+  EX.io.MEMWBinstruction := MEMWB.instructionOut
   EX.io.RegA := IDEX.RegAOut
   EX.io.RegB := IDEX.RegBOut
+  EX.io.EXMEMVal := EXMEM.aluResultOut
+  EX.io.MEMWBVal := WB.io.outputData
   EX.io.immediate := IDEX.immediateOut
   EX.io.controlSignals := IDEX.controlSignalsOut
+  EX.io.EXMEMcontrolSignals := EXMEM.controlSignalsOut
+  EX.io.MEMWBcontrolSignals := MEMWB.controlSignalsOut
   EX.io.branchType := IDEX.branchTypeOut
   EX.io.op1Select := IDEX.op1SelectOut
   EX.io.op2Select := IDEX.op2SelectOut
@@ -123,9 +129,13 @@ class CPU extends MultiIOModule {
   MEMWB.dataMemIn := MEM.io.dataOut
   MEMWB.aluResultIn := EXMEM.aluResultOut
 
+  // WB Inputs
+  WB.io.aluResultIn := MEMWB.aluResultOut
+  WB.io.dataMemIn := MEMWB.dataMemOut
+  WB.io.controlSignals := MEMWB.controlSignalsOut
+  
   // WB is implemented in ID stage
-  ID.io.WBaluResultIn := MEMWB.aluResultOut
-  ID.io.WBdataMemIn := MEMWB.dataMemOut
+  ID.io.WBdata := WB.io.outputData
   ID.io.WBinstruction := MEMWB.instructionOut
   ID.io.WBcontrolSignals := MEMWB.controlSignalsOut
 }

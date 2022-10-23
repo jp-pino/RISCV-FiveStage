@@ -19,10 +19,10 @@ import LogParser._
 
 object Manifest {
 
-  val singleTest = "branchProfiling.s"
+  val singleTest = "forward1.s"
 
   // Tells the program to add NOPs for executing test cases prior to the pipeline implementation
-  val nopPadded = true
+  val nopPadded = false
 
   val singleTestOptions = TestOptions(
     printIfSuccessful  = true,
@@ -35,7 +35,7 @@ object Manifest {
     nopPadded          = nopPadded,
     breakPoints        = Nil, // not implemented
     testName           = singleTest,
-    maxSteps           = 15000)
+    maxSteps           = 20000)
 
 
   val allTestOptions: String => TestOptions = name => TestOptions(
