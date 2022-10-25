@@ -23,6 +23,7 @@ class InstructionDecode extends MultiIOModule {
         * TODO: Your code here.
         */
       val instruction = Input(new Instruction)
+      val instructionOut = Output(new Instruction)
       val PC = Input(UInt(32.W))
       
       val immediate = Output(SInt(32.W))
@@ -69,9 +70,13 @@ class InstructionDecode extends MultiIOModule {
   // printf("ALU RES[%d]: 0x%x | REG A[%d]: 0x%x | REG B[%d]: 0x%x\n", io.WBinstruction.registerRd, io.WBdata, io.instruction.registerRs1, registers.io.readData1, io.instruction.registerRs2, registers.io.readData2) 
 
   // Milestone 1. Connect register outputs to RegA and RegB wires
-  // Milestone 3. Forward to save one cycle?
-  io.RegA := Mux(io.instruction.registerRs1 === io.WBinstruction.registerRd, io.WBdata, registers.io.readData1)
-  io.RegB := Mux(io.instruction.registerRs2 === io.WBinstruction.registerRd, io.WBdata, registers.io.readData2)
+  // Milestone 3. Deal with stale memory
+  val staleRegA = Wire(Bool())
+  val staleRegB = Wire(Bool())
+  staleRegA := (io.instruction.registerRs1 === io.WBinstruction.registerRd) && (io.instruction.registerRs1 =/= 0.U) && io.WBcontrolSignals.regWrite
+  staleRegB := (io.instruction.registerRs2 === io.WBinstruction.registerRd) && (io.instruction.registerRs2 =/= 0.U) && io.WBcontrolSignals.regWrite
+  io.RegA := Mux(staleRegA, io.WBdata, registers.io.readData1)
+  io.RegB := Mux(staleRegB, io.WBdata, registers.io.readData2)
 
   // Milestone 1. Connect Decoder to instruction signal
   // Create a Mux to select the immediate using the immType 
@@ -87,11 +92,18 @@ class InstructionDecode extends MultiIOModule {
   ))
 
   // Milestone 3. Stall signal
-  // io.stall := false.B
-  io.stall := io.EXcontrolSignals.memRead && (io.EXinstruction.registerRs2 === io.instruction.registerRs1 || io.EXinstruction.registerRs2 === io.instruction.registerRs2)
+  io.stall := io.EXcontrolSignals.memRead && (io.EXinstruction.registerRd === io.instruction.registerRs1 || (io.EXinstruction.registerRd === io.instruction.registerRs2))
+
+  // Insert NOP Bubble
+  when(io.stall){
+    io.instructionOut := Instruction.NOP
+    io.controlSignals := (0.U).asTypeOf(new ControlSignals)
+  }.otherwise{
+    io.instructionOut := io.instruction
+    io.controlSignals := decoder.controlSignals
+  }
 
   // Milestone 1. Connect control signals
-  io.controlSignals := Mux(io.stall, (0.U).asTypeOf(new ControlSignals), decoder.controlSignals)
   io.branchType := decoder.branchType
   io.op1Select := decoder.op1Select
   io.op2Select := decoder.op2Select

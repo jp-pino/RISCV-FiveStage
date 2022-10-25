@@ -68,7 +68,8 @@ class CPU extends MultiIOModule {
   // IFID Inputs
   // Connect output instrction from IF stage to IFID barrier instrunction input
   IFID.instructionIn := IF.io.instruction
-  // Connect output PC from IF stage to IFID barrier PC input
+  // Connect output PC from IF stage to IFID barrier PC input 
+  // Writing next instruction to the pipeline
   IFID.PCIn := IF.io.PC + 4.U
 
   // ID Inputs
@@ -82,7 +83,7 @@ class CPU extends MultiIOModule {
 
   // IDEX Inputs (from IFID and ID)
   IDEX.PCIn := IFID.PCOut
-  IDEX.instructionIn := IFID.instructionOut
+  IDEX.instructionIn := ID.io.instructionOut
   IDEX.RegAIn := ID.io.RegA
   IDEX.RegBIn := ID.io.RegB
   IDEX.immediateIn := ID.io.immediate
@@ -113,7 +114,7 @@ class CPU extends MultiIOModule {
   // EXMEM Inputs
   EXMEM.PCIn := EX.io.PCOut
   EXMEM.instructionIn := IDEX.instructionOut
-  EXMEM.RegBIn := IDEX.RegBOut
+  EXMEM.RegBIn := EX.io.RegBOut
   EXMEM.aluResultIn := EX.io.aluResult
   EXMEM.controlSignalsIn := IDEX.controlSignalsOut
   EXMEM.branchTypeIn := IDEX.branchTypeOut

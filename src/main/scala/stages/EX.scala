@@ -15,6 +15,7 @@ class Execute extends Module {
 
     val RegA = Input(UInt(32.W))
     val RegB = Input(UInt(32.W))
+    val RegBOut = Output(UInt(32.W))
     val EXMEMVal = Input(UInt(32.W))
     val MEMWBVal = Input(UInt(32.W))
 
@@ -88,6 +89,8 @@ class Execute extends Module {
     RegSource.EXMEM -> io.EXMEMVal,
     RegSource.MEMWB -> io.MEMWBVal
   ))
+
+  io.RegBOut := rs2
 
   // printf("RegA: 0x%x | RegB: 0x%x | EXMEMVal: 0x%x | MEMWBVal: 0x%x\n", io.RegA, io.RegB, io.EXMEMVal, io.MEMWBVal)
   // printf("RS1[%d]: 0x%x | RS2[%d]: 0x%x | RES: 0x%x\n\n  ", regSourceA, rs1, regSourceB, rs2, ALU.aluResult)

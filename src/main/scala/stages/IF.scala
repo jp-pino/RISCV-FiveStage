@@ -1,6 +1,7 @@
 package FiveStage
 import chisel3._
 import chisel3.experimental.MultiIOModule
+import chisel3.util.{ BitPat, Cat }
 
 class InstructionFetch extends MultiIOModule {
 
@@ -37,6 +38,7 @@ class InstructionFetch extends MultiIOModule {
 
   val IMEM = Module(new IMEM)
   val PC   = RegInit(UInt(32.W), 0.U)
+  val PCOld = RegInit(UInt(32.W), 0.U)
 
 
   /**
@@ -51,15 +53,13 @@ class InstructionFetch extends MultiIOModule {
     * 
     * You should expand on or rewrite the code below.
     */
-  io.PC := PC
-  IMEM.io.instructionAddress := PC
+  PCOld := PC
+  io.PC := Mux(io.stall, PCOld, PC)
+  IMEM.io.instructionAddress := io.PC
 
   // Add stalling functionality
-  PC := Mux((io.EXMEMcontrolSignals.branch && io.EXMEMcomparator) || io.EXMEMcontrolSignals.jump, io.EXMEMPC, Mux(io.stall, io.PC, io.PC + 4.U))
-
-  val instruction = Wire(new Instruction)
-  instruction := IMEM.io.instruction.asTypeOf(new Instruction)
-  io.instruction := instruction
+  PC := Mux((io.EXMEMcontrolSignals.branch && io.EXMEMcomparator) || io.EXMEMcontrolSignals.jump, io.EXMEMPC, Mux(io.stall, PC, PC + 4.U))
+  io.instruction := IMEM.io.instruction.asTypeOf(new Instruction)
 
 
   /**
@@ -67,6 +67,6 @@ class InstructionFetch extends MultiIOModule {
     */
   when(testHarness.IMEMsetup.setup) {
     PC := 0.U
-    instruction := Instruction.NOP
+    io.instruction := Instruction.NOP
   }
 }
