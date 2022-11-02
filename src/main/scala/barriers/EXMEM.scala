@@ -62,7 +62,7 @@ class EXMEM extends Module {
   io.controlSignalsOut := controlSignals.asTypeOf(new ControlSignals)
 
   // BranchType Register
-  val branchType = RegInit(UInt(32.W), 0.U)
+  val branchType = RegInit(UInt(3.W), 0.U)
   // Wire through register
   branchType := io.branchTypeIn
   io.branchTypeOut := branchType
