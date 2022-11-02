@@ -19,7 +19,7 @@ import LogParser._
 
 object Manifest {
 
-  val singleTest = "load2.s"
+  val singleTest = "palindrome.s"
 
   // Tells the program to add NOPs for executing test cases prior to the pipeline implementation
   val nopPadded = false

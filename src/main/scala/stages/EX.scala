@@ -113,12 +113,12 @@ class Execute extends Module {
   io.aluResult := ALU.aluResult
 
   // Jump logic
-  io.PCOut := Mux(io.branchType === branchType.link, ((io.RegA.asSInt() + io.immediate).asUInt()) & "hfffffffe".U, (io.PC.asSInt() - 4.S + io.immediate).asUInt()).asUInt() 
+  io.PCOut := Mux(io.branchType === branchType.link, ((rs1.asSInt() + io.immediate).asUInt()) & "hfffffffe".U, (io.PC.asSInt() - 4.S + io.immediate).asUInt()).asUInt() 
   // printf("branchType: %x | imm: %x | PC: %x | pc + imm + mask: %x | pc + imm: %x \n", io.branchType, io.immediate, io.PC, ((io.PC.asSInt() + io.immediate).asUInt()) & "hfffffffe".U, (io.PC.asSInt() + io.immediate).asUInt())
 
   // Branch comparator
-  Comparator.op1 := io.RegA
-  Comparator.op2 := io.RegB
+  Comparator.op1 := rs1
+  Comparator.op2 := rs2
   Comparator.branchType := io.branchType
   io.comparator := Comparator.result
 }

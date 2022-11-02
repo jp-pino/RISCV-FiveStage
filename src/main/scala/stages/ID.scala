@@ -7,6 +7,8 @@ import chisel3.util.MuxLookup
 
 class InstructionDecode extends MultiIOModule {
 
+  val MAX_SQUASH = 2.U;
+
   // Don't touch the test harness
   val testHarness = IO(
     new Bundle {
@@ -45,6 +47,9 @@ class InstructionDecode extends MultiIOModule {
       val EXinstruction = Input(new Instruction)
       val EXcontrolSignals = Input(new ControlSignals)
       val stall = Output(Bool())
+
+      // Control hazards
+      val squash = Input(Bool())
     }
   )
 
@@ -94,19 +99,37 @@ class InstructionDecode extends MultiIOModule {
   // Milestone 3. Stall signal
   io.stall := io.EXcontrolSignals.memRead && (io.EXinstruction.registerRd === io.instruction.registerRs1 || (io.EXinstruction.registerRd === io.instruction.registerRs2))
 
-  // Insert NOP Bubble
-  when(io.stall){
+  // Insert NOP Bubble when stalling or squashing
+  val squashCount = RegInit(0.U(2.W))
+  when(io.squash || (squashCount < MAX_SQUASH && squashCount > 0.U)){
     io.instructionOut := Instruction.NOP
     io.controlSignals := (0.U).asTypeOf(new ControlSignals)
+    io.branchType := branchType.DC
+    io.op1Select := Op1Select.DC
+    io.op2Select := Op2Select.DC
+    io.ALUop := ALUOps.DC
+    squashCount := squashCount + 1.U
+  }.elsewhen(squashCount === MAX_SQUASH){
+    io.instructionOut := Instruction.NOP
+    io.controlSignals := (0.U).asTypeOf(new ControlSignals)
+    io.branchType := branchType.DC
+    io.op1Select := Op1Select.DC
+    io.op2Select := Op2Select.DC
+    io.ALUop := ALUOps.DC
+    squashCount := 0.U
+  }.elsewhen(io.stall) {
+    io.instructionOut := Instruction.NOP
+    io.controlSignals := (0.U).asTypeOf(new ControlSignals)
+    io.branchType := branchType.DC
+    io.op1Select := Op1Select.DC
+    io.op2Select := Op2Select.DC
+    io.ALUop := ALUOps.DC
   }.otherwise{
     io.instructionOut := io.instruction
     io.controlSignals := decoder.controlSignals
+    io.branchType := decoder.branchType
+    io.op1Select := decoder.op1Select
+    io.op2Select := decoder.op2Select
+    io.ALUop := decoder.ALUop
   }
-
-  // Milestone 1. Connect control signals
-  io.branchType := decoder.branchType
-  io.op1Select := decoder.op1Select
-  io.op2Select := decoder.op2Select
-  io.ALUop := decoder.ALUop
-  
 }

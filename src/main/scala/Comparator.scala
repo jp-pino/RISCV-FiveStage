@@ -13,7 +13,7 @@ class Comparator extends Module {
     val op1 = Input(UInt(32.W))
     val op2 = Input(UInt(32.W))
 
-    val result = Output(UInt(32.W))
+    val result = Output(Bool())
   })
 
   
@@ -25,8 +25,7 @@ class Comparator extends Module {
     branchType.gteu -> (io.op1 >= io.op2),
     branchType.ltu -> (io.op1 < io.op2),
     branchType.jump -> (true.B),
-    branchType.link -> (true.B),
-    branchType.DC -> (false.B)
+    branchType.link -> (true.B)
   ) 
 
   // printf("1: 0x%x | 2: 0x%x | RES: %x\n", io.op1, io.op2, io.op1 << io.op2(4, 0))

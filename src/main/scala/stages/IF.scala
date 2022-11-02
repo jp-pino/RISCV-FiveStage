@@ -27,7 +27,11 @@ class InstructionFetch extends MultiIOModule {
       val PC = Output(UInt())
       val instruction = Output(new Instruction)
 
+      // Stall
       val stall = Input(Bool())
+
+      // Control hazards
+      val squash = Input(Bool())
 
       // From EXMEM
       val EXMEMPC = Input(UInt(32.W))
@@ -53,13 +57,19 @@ class InstructionFetch extends MultiIOModule {
     * 
     * You should expand on or rewrite the code below.
     */
-  PCOld := PC
+  PCOld := io.PC
   io.PC := Mux(io.stall, PCOld, PC)
   IMEM.io.instructionAddress := io.PC
 
   // Add stalling functionality
-  PC := Mux((io.EXMEMcontrolSignals.branch && io.EXMEMcomparator) || io.EXMEMcontrolSignals.jump, io.EXMEMPC, Mux(io.stall, PC, PC + 4.U))
-  io.instruction := IMEM.io.instruction.asTypeOf(new Instruction)
+  val branchOrJump = Wire(Bool())
+  branchOrJump := ((io.EXMEMcontrolSignals.branch && io.EXMEMcomparator) || io.EXMEMcontrolSignals.jump) 
+  val notSameAddress = Wire(Bool())
+  notSameAddress := (io.EXMEMPC =/= io.PC)
+  
+  
+  PC := Mux(branchOrJump, io.EXMEMPC, Mux(io.stall, PC, PC + 4.U))
+  io.instruction := Mux(io.squash, Instruction.NOP, IMEM.io.instruction.asTypeOf(new Instruction))
 
 
   /**
