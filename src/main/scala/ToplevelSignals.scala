@@ -80,6 +80,12 @@ object branchType {
   You can choose to instead do this in the execute stage, and you may forego
   using them altogether.
   */
+object RegSource {
+  val IDEX   = 0.asUInt(2.W)
+  val EXMEM  = 1.asUInt(2.W)
+  val MEMWB  = 2.asUInt(2.W)
+}
+
 object Op1Select {
   val rs1 = 0.asUInt(1.W)
   val PC  = 1.asUInt(1.W)

@@ -347,10 +347,20 @@ object PrintUtils {
     }
   }
 
+
+  def addCycle(traces: List[List[String]], el: List[String], i: Int) = {
+    val start = (traces.take(i).map{case e => e.length} ::: List(0)).reduce(_ + _) - 1
+
+    el.zipWithIndex.map{ case (element, index) => 
+      s"${if (start + index >= 0) start + index else ""}\t | ${element}"
+    }
+  }
+
   def printLogSideBySide(trace: List[ExecutionTraceEvent], chiselTrace: List[CircuitTrace], program: Program): String = {
     import LogParser._
-    val header = "ADDRESS   --   VM UPDATES                                                ---      DEVICE UNDER TEST UPDATES                     ---    CORRESPONDING SOURCE LINE\n"
+    val header = " \tADDRESS   --   VM UPDATES                                                ---      DEVICE UNDER TEST UPDATES                     ---    CORRESPONDING SOURCE LINE\n"
     val traces = mergeTraces(trace, chiselTrace).map(x => printMergedTraces((x), program))
-    "\n" + header + (traces.map(_.mkString("\n")).mkString("\n", "\n--------------------------------------------------------------------------+------------------------------------------------------+-------------------------------\n", "\n"))
+    "\n" + header + (traces.zipWithIndex.map({ case (el, i) => addCycle(traces, el, i)
+    }).map(_.mkString("\n")).mkString("\n", "\n--------------------------------------------------------------------------+------------------------------------------------------+-------------------------------\n", "\n"))
   }
 }
