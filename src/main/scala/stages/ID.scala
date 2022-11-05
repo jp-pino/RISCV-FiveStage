@@ -101,23 +101,10 @@ class InstructionDecode extends MultiIOModule {
 
   // Insert NOP Bubble when stalling or squashing
   val squashCount = RegInit(0.U(2.W))
-  when(io.squash || (squashCount < MAX_SQUASH && squashCount > 0.U)){
-    io.instructionOut := Instruction.NOP
-    io.controlSignals := (0.U).asTypeOf(new ControlSignals)
-    io.branchType := branchType.DC
-    io.op1Select := Op1Select.DC
-    io.op2Select := Op2Select.DC
-    io.ALUop := ALUOps.DC
-    squashCount := squashCount + 1.U
-  }.elsewhen(squashCount === MAX_SQUASH){
-    io.instructionOut := Instruction.NOP
-    io.controlSignals := (0.U).asTypeOf(new ControlSignals)
-    io.branchType := branchType.DC
-    io.op1Select := Op1Select.DC
-    io.op2Select := Op2Select.DC
-    io.ALUop := ALUOps.DC
-    squashCount := 0.U
-  }.elsewhen(io.stall) {
+  val bubble = Wire(Bool())
+  bubble := io.squash || squashCount > 0.U || io.stall
+
+  when(bubble) {
     io.instructionOut := Instruction.NOP
     io.controlSignals := (0.U).asTypeOf(new ControlSignals)
     io.branchType := branchType.DC
@@ -131,5 +118,11 @@ class InstructionDecode extends MultiIOModule {
     io.op1Select := decoder.op1Select
     io.op2Select := decoder.op2Select
     io.ALUop := decoder.ALUop
+  }
+
+  when(io.squash || (squashCount < MAX_SQUASH && squashCount > 0.U)){
+    squashCount := squashCount + 1.U
+  }.elsewhen(squashCount === MAX_SQUASH){
+    squashCount := 0.U
   }
 }
