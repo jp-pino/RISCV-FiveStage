@@ -36,10 +36,10 @@ class BranchPredictor extends Module {
 
   when(io.update && io.controlSignals.branch && !io.setup) {
     when(io.taken && (history(tag) < 3.U)) {
-      printf("UPDATE  TRUE: %x -> %x : %x\n", io.address, io.target, history(tag))
+      // printf("UPDATE  TRUE: %x -> %x : %x\n", io.address, io.target, history(tag))
       history(tag) := history(tag) + 1.U
     }.elsewhen(!io.taken && (history(tag) > 0.U)) {
-      printf("UPDATE FALSE: %x -> %x : %x\n", io.address, io.target, history(tag))
+      // printf("UPDATE FALSE: %x -> %x : %x\n", io.address, io.target, history(tag))
       history(tag) := history(tag) - 1.U
     }
     addresses(tag) := io.address

@@ -61,7 +61,7 @@ class CPU extends MultiIOModule {
   // IF Inputs
   IF.io.stall := ID.io.stall
   val squash = Wire(Bool())
-  squash := (EX.io.comparator && (IDEX.controlSignalsOut.branch || IDEX.controlSignalsOut.jump)) || EX.io.mispredict
+  squash := ((EX.io.comparator && EX.io.mispredict && IDEX.controlSignalsOut.branch) || IDEX.controlSignalsOut.jump) || EX.io.mispredict
   IF.io.squash := squash
   
   IF.io.EXPC := IDEX.PCOut

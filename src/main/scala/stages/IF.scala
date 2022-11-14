@@ -95,17 +95,17 @@ class InstructionFetch extends MultiIOModule {
 
   // Add stalling functionality
   val branchOrJump = Wire(Bool())
-  branchOrJump := ((io.EXMEMcontrolSignals.branch && io.EXMEMcomparator) || io.EXMEMcontrolSignals.jump)
+  branchOrJump := ((io.EXMEMcontrolSignals.branch && mispredict && io.EXMEMcomparator) || io.EXMEMcontrolSignals.jump)
   val notSameAddress = Wire(Bool())
   notSameAddress := (io.EXMEMPC =/= io.PC)
 
   when(io.stall){
     io.prediction := PC
   }.elsewhen(branchOrJump || mispredict){ // Mispredict correction
-    printf("MISS Branch Or Unknown Jump 0x%x\n", io.EXMEMPC)
+    // printf("MISS Branch Or Unknown Jump 0x%x\n", io.EXMEMPC)
     io.prediction := io.EXMEMPC
   }.elsewhen(BP.prediction) {
-    printf("PREDICTION: %x -> %x\n", BP.addressPrediction, BP.targetPrediction)
+    // printf("PREDICTION: %x -> %x\n", BP.addressPrediction, BP.targetPrediction)
     io.prediction := BP.targetPrediction
     // io.prediction := PC + 4.U
   }.otherwise{
@@ -113,8 +113,11 @@ class InstructionFetch extends MultiIOModule {
   }
   PC := io.prediction
 
+
+  val missCounter = RegInit(UInt(32.W), 0.U)
   when(io.mispredict) {
-    printf("MISS\n")
+    missCounter := missCounter + 1.U
+    printf("MISS: %d\n", missCounter + 1.U)
   }
   
   
