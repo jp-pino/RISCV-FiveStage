@@ -9,6 +9,8 @@ class BranchPredictor extends Module {
   final val ADDRESS_BITS = 9
 
   val io = IO(new Bundle {
+    val setup = Input(Bool())
+
     // Signals to update table
     val taken = Input(Bool())
     val address = Input(UInt(32.W))
@@ -32,7 +34,7 @@ class BranchPredictor extends Module {
   // Stats
   // val error = RegInit(UInt(10.W), 0.U)
 
-  when(io.update && io.controlSignals.branch) {
+  when(io.update && io.controlSignals.branch && !io.setup) {
     when(io.taken && (history(tag) < 3.U)) {
       printf("UPDATE  TRUE: %x -> %x : %x\n", io.address, io.target, history(tag))
       history(tag) := history(tag) + 1.U
@@ -48,7 +50,7 @@ class BranchPredictor extends Module {
   val tagPrediction = Wire(UInt(ADDRESS_BITS.W))
   tagPrediction := io.addressPrediction(ADDRESS_BITS, 0)
 
-  when(addresses(tagPrediction) === io.addressPrediction) {
+  when((addresses(tagPrediction) === io.addressPrediction) && addresses(tagPrediction) =/= 0.U) {
     io.prediction := true.B
     io.targetPrediction := Mux(history(tagPrediction) >= 2.U, targets(tagPrediction), io.addressPrediction + 4.U)
   }.otherwise{
