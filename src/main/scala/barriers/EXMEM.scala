@@ -29,6 +29,9 @@ class EXMEM extends Module {
 
     val comparatorIn = Input(Bool())
     val comparatorOut = Output(Bool())
+
+    val mispredictIn = Input(Bool())
+    val mispredictOut = Output(Bool())
   })
 
   // PC Register
@@ -72,4 +75,10 @@ class EXMEM extends Module {
   // Wire through register
   comparator := io.comparatorIn
   io.comparatorOut := comparator
+
+  // Mispredict Register
+  val mispredict = RegInit(Bool(), false.B)
+  // Wire through register
+  mispredict := io.mispredictIn
+  io.mispredictOut := mispredict
 }

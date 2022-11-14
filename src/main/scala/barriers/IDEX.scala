@@ -39,6 +39,8 @@ class IDEX extends Module {
     val ALUopIn = Input(UInt(4.W))
     val ALUopOut = Output(UInt(4.W))
 
+    val predictionIn = Input(UInt(32.W))
+    val predictionOut = Output(UInt(32.W))
   })
 
   // PC Register
@@ -46,6 +48,12 @@ class IDEX extends Module {
   // Wire through register
   PC := io.PCIn
   io.PCOut := PC
+
+  // Prediction register
+  val prediction = RegInit(UInt(32.W), 0.U)
+  // Wire through register
+  prediction := io.predictionIn
+  io.predictionOut := prediction
 
   // Instruction Register
   val instruction = RegInit(Reg(new Instruction))
