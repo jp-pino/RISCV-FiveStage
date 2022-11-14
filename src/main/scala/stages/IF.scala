@@ -33,16 +33,45 @@ class InstructionFetch extends MultiIOModule {
       // Control hazards
       val squash = Input(Bool())
 
+      // From EX
+      val EXPC = Input(UInt(32.W))
+      val EXPCOut = Input(UInt(32.W))
+      val EXcontrolSignals = Input(new ControlSignals)
+      val EXbranchType = Input(UInt(3.W))
+      val EXcomparator = Input(Bool())
+
       // From EXMEM
       val EXMEMPC = Input(UInt(32.W))
       val EXMEMcontrolSignals = Input(new ControlSignals)
       val EXMEMbranchType = Input(UInt(3.W))
       val EXMEMcomparator = Input(Bool())
+
+      val prediction = Output(UInt(32.W))
+      val mispredict = Input(Bool())
+      val speculative = Output(Bool())
     })
 
   val IMEM = Module(new IMEM)
   val PC   = RegInit(UInt(32.W), 0.U)
   val PCOld = RegInit(UInt(32.W), 0.U)
+  val PCBranchNotTaken = RegInit(UInt(32.W), 0.U)
+  val speculative = RegInit(Bool(), false.B)
+
+  io.speculative := speculative
+
+
+  val BP = Module(new BranchPredictor).io
+
+
+  // Branch Predictor
+  BP.taken := io.EXcomparator && io.EXcontrolSignals.branch 
+  BP.controlSignals := io.EXcontrolSignals
+  BP.update := (io.EXcontrolSignals.branch) && !testHarness.IMEMsetup.setup
+  BP.address := io.EXPC - 4.U
+  BP.target := io.EXPCOut
+
+  BP.addressPrediction := PCOld
+
 
 
   /**
@@ -66,10 +95,25 @@ class InstructionFetch extends MultiIOModule {
   branchOrJump := ((io.EXMEMcontrolSignals.branch && io.EXMEMcomparator) || io.EXMEMcontrolSignals.jump) 
   val notSameAddress = Wire(Bool())
   notSameAddress := (io.EXMEMPC =/= io.PC)
+
+  when(BP.prediction) {
+    io.prediction := BP.targetPrediction
+    printf("PREDICTION: %x -> %x\n", BP.addressPrediction, BP.targetPrediction)
+  }.elsewhen(branchOrJump && notSameAddress){
+    printf("Unknown Branch Or Jump\n")
+    io.prediction := PC + 4.U
+  }.otherwise{
+    io.prediction := PC + 4.U
+  }
+
+  when(io.mispredict) {
+    printf("MISS!!\n")
+  }
+
   
   
   PC := Mux(branchOrJump, io.EXMEMPC, Mux(io.stall, PC, PC + 4.U))
-  io.instruction := Mux(io.squash, Instruction.NOP, IMEM.io.instruction.asTypeOf(new Instruction))
+  io.instruction := Mux(io.squash || io.mispredict, Instruction.NOP, IMEM.io.instruction.asTypeOf(new Instruction))
 
 
   /**
