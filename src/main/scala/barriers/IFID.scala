@@ -14,6 +14,9 @@ class IFID extends Module {
 
     val PCIn = Input(UInt(32.W))
     val PCOut = Output(UInt(32.W))
+
+    val predictionIn = Input(UInt(32.W))
+    val predictionOut = Output(UInt(32.W))
   })
 
   val PC = RegInit(UInt(32.W), 0.U)
@@ -21,6 +24,12 @@ class IFID extends Module {
   // Wire through register
   PC := io.PCIn
   io.PCOut := PC
+
+  val prediction = RegInit(UInt(32.W), 0.U)
+
+  // Wire through register
+  prediction := io.predictionIn
+  io.predictionOut := prediction
   
   // Wire directly
   io.instructionOut := io.instructionIn

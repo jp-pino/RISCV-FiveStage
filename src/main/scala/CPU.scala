@@ -60,11 +60,20 @@ class CPU extends MultiIOModule {
 
   // IF Inputs
   IF.io.stall := ID.io.stall
-  IF.io.squash := (EX.io.comparator && (IDEX.controlSignalsOut.branch || IDEX.controlSignalsOut.jump))
+  val squash = Wire(Bool())
+  squash := ((EX.io.comparator && EX.io.mispredict && IDEX.controlSignalsOut.branch) || IDEX.controlSignalsOut.jump) || EX.io.mispredict
+  IF.io.squash := squash
+  
+  IF.io.EXPC := IDEX.PCOut
+  IF.io.EXPCOut := EX.io.PCOut
+  IF.io.EXcontrolSignals := IDEX.controlSignalsOut
+  IF.io.EXbranchType := IDEX.branchTypeOut
+  IF.io.EXcomparator := EX.io.comparator
   IF.io.EXMEMPC := EXMEM.PCOut
   IF.io.EXMEMcontrolSignals := EXMEM.controlSignalsOut
   IF.io.EXMEMbranchType := EXMEM.branchTypeOut
   IF.io.EXMEMcomparator := EXMEM.comparatorOut
+  IF.io.mispredict := EX.io.mispredict
   
   // IFID Inputs
   // Connect output instrction from IF stage to IFID barrier instrunction input
@@ -72,6 +81,7 @@ class CPU extends MultiIOModule {
   // Connect output PC from IF stage to IFID barrier PC input 
   // Writing next instruction to the pipeline
   IFID.PCIn := IF.io.PC + 4.U
+  IFID.predictionIn := IF.io.prediction
 
   // ID Inputs
   // Connect instruction output from IFID barrier to ID stage
@@ -81,7 +91,7 @@ class CPU extends MultiIOModule {
   // Stall detector
   ID.io.EXinstruction := IDEX.instructionOut
   ID.io.EXcontrolSignals := IDEX.controlSignalsOut
-  ID.io.squash := (EX.io.comparator && (IDEX.controlSignalsOut.branch || IDEX.controlSignalsOut.jump))
+  ID.io.squash := squash
 
   // IDEX Inputs (from IFID and ID)
   IDEX.PCIn := IFID.PCOut
@@ -94,6 +104,7 @@ class CPU extends MultiIOModule {
   IDEX.op1SelectIn := ID.io.op1Select
   IDEX.op2SelectIn := ID.io.op2Select
   IDEX.ALUopIn := ID.io.ALUop
+  IDEX.predictionIn := IFID.predictionOut
 
   // EX Inputs (from IDEX and forwarded from EXMEM and MEMWB) 
   EX.io.PC := IDEX.PCOut
@@ -112,6 +123,7 @@ class CPU extends MultiIOModule {
   EX.io.op1Select := IDEX.op1SelectOut
   EX.io.op2Select := IDEX.op2SelectOut
   EX.io.ALUop := IDEX.ALUopOut
+  EX.io.prediction := IDEX.predictionOut
 
   // EXMEM Inputs
   EXMEM.PCIn := EX.io.PCOut
@@ -121,6 +133,7 @@ class CPU extends MultiIOModule {
   EXMEM.controlSignalsIn := IDEX.controlSignalsOut
   EXMEM.branchTypeIn := IDEX.branchTypeOut
   EXMEM.comparatorIn := EX.io.comparator
+  EXMEM.mispredictIn := EX.io.mispredict
   
   // MEM Inputs
   MEM.io.PC := EXMEM.PCOut

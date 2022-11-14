@@ -35,6 +35,9 @@ class Execute extends Module {
     val ALUop          = Input(UInt(4.W))
 
     val comparator = Output(Bool())
+
+    val prediction = Input(UInt(32.W))
+    val mispredict = Output(Bool())
   })
 
 
@@ -113,8 +116,9 @@ class Execute extends Module {
   io.aluResult := ALU.aluResult
 
   // Jump logic
-  io.PCOut := Mux(io.branchType === branchType.link, ((rs1.asSInt() + io.immediate).asUInt()) & "hfffffffe".U, (io.PC.asSInt() - 4.S + io.immediate).asUInt()).asUInt() 
+  io.PCOut := Mux(Comparator.result, Mux(io.branchType === branchType.link, ((rs1.asSInt() + io.immediate).asUInt()) & "hfffffffe".U, (io.PC.asSInt() - 4.S + io.immediate).asUInt()).asUInt(), io.PC)
   // printf("branchType: %x | imm: %x | PC: %x | pc + imm + mask: %x | pc + imm: %x \n", io.branchType, io.immediate, io.PC, ((io.PC.asSInt() + io.immediate).asUInt()) & "hfffffffe".U, (io.PC.asSInt() + io.immediate).asUInt())
+  io.mispredict := (io.PCOut =/= io.prediction) && (io.controlSignals.branch)
 
   // Branch comparator
   Comparator.op1 := rs1
