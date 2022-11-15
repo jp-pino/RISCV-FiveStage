@@ -6,7 +6,7 @@ import chisel3.util.MuxLookup
 
 // Milestone 4. Implement BranchPredictor. 
 class BranchPredictor extends Module {
-  final val ADDRESS_BITS = 9
+  final val ADDRESS_BITS = 5
 
   val io = IO(new Bundle {
     val setup = Input(Bool())
