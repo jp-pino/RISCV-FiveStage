@@ -117,7 +117,7 @@ class InstructionFetch extends MultiIOModule {
   val missCounter = RegInit(UInt(32.W), 0.U)
   when(io.mispredict) {
     missCounter := missCounter + 1.U
-    printf("MISS: %d\n", missCounter + 1.U)
+    // printf("MISS: %d\n", missCounter + 1.U)
   }
   
   
